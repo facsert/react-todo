@@ -9,6 +9,11 @@ import {
     CommandList,
 } from "@/components/ui/command"
 
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label"
+
+import { PenLine, Trash2  } from 'lucide-react';
+
 const todos = [
     {
         id: 1,
@@ -51,15 +56,23 @@ const todos = [
 export default function List() {
   return (
       <Command>
-        <CommandInput />
+        <div className="border ">
+            <CommandInput placeholder="Search todo" />
+        </div>
         <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Todos">
                 {todos.map((todo) => {
                     return (
                         <CommandItem key={todo.id} className="h-[50px] mt-4 border">
-                            {todo.title}
-                            <CommandShortcut>⌘T</CommandShortcut>
+                            <Checkbox />  
+                            <Label className="line-through">
+                                {todo.title}
+                            </Label>
+                            <CommandShortcut className="flex flex-row border">
+                                <PenLine />
+                                <Trash2 />
+                            </CommandShortcut>
                         </CommandItem>
                     )
                 })}
