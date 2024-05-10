@@ -10,15 +10,23 @@ interface Todo {
 interface TodoState {
     todo: Todo;
     todos: Todo[];
+    setTodo: (todo: Todo) => void;
     setTodos: (todos: Todo[]) => void;
 }
+
+// let defaultTodos:Todo[] = [
+//     { id: 1, title: 'Todo 1', completed: false, content: 'Todo 1 content' },
+//     {id: 2, title: 'Todo 2', completed: false, content: 'Todo 2 content' },
+//     {id: 3, title: 'Todo 3', completed: false, content: 'Todo 3 content' }
+// ]
 
 function getDefaultTodo() {
     if (typeof window !== 'undefined') {
         console.log('You are on the browser')
-        const localTodo = localStorage.getItem('todos')
-        console.log(localTodo)
-        return localTodo ? JSON.parse(localTodo) : [];
+        // const localTodo = localStorage.getItem('todos')
+        // console.log(localTodo)
+        // return localTodo ? JSON.parse(localTodo) : [];
+        return [];
       } else {
         console.log('You are on the server')
         return [];
@@ -28,7 +36,12 @@ function getDefaultTodo() {
 
 const useTodo = create<TodoState>((set) => ({
     todo: { id: 0, title: '', completed: false, content: '' },
-    todos: getDefaultTodo(),
+    setTodo: (todo: Todo) => set((state) => ({ todo: todo })),
+    todos: [
+        { id: 1, title: 'Todo 1', completed: false, content: 'Todo 1 content' },
+        {id: 2, title: 'Todo 2', completed: false, content: 'Todo 2 content' },
+        {id: 3, title: 'Todo 3', completed: false, content: 'Todo 3 content' }
+    ],
     setTodos: (todos: Todo[]) => set({ todos: todos }),
 }));
 

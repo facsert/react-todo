@@ -42,15 +42,23 @@ const formSchema = z.object({
 })
 
 
-export default function AddTodo() {
+export default function TodoPage(id: number, useType: string) {
+    const { todo, todos, setTodo, setTodos} = useTodo();
+
+    if (useType === "edit" ) {
+        todos.map((todo) => { todo.id === id? setTodo(todo): null })
+    } else {
+        setTodo({id: 0, title: "", content: "", completed: false})
+    }
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
-            content: "",
+            title: todo.title,
+            content: todo.content,
         },
     })
-    const { todos, setTodos} = useTodo();
+
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         let id: number = 1
         while (todos.find(t => t.id === id)) { id++; }
@@ -68,7 +76,7 @@ export default function AddTodo() {
     <div className="w-full mb-4">
         <Dialog>
             <DialogTrigger className="w-full h-10 rounded-md bg-primary text-primary-foreground hover:bg-primary/90">
-                ADD TODO
+                {useType === "edit"? "": "ADD"}
             </DialogTrigger>
             <DialogContent>
                 <Form {...form}>
@@ -104,7 +112,7 @@ export default function AddTodo() {
                           )}
                         />
                         <DialogClose type="submit">
-                            ADD
+                            FINISH
                         </DialogClose>
                     </form>
                 </Form>
