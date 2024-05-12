@@ -25,12 +25,11 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 
-import { useTodo, Todo } from "@/lib/data"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { useTodo } from "@/lib/data"
+import { useEffect, useState } from "react"
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -41,17 +40,24 @@ const formSchema = z.object({
     }),
 })
 
-
 export default function AddTodo() {
+    const { todos, setTodos} = useTodo();
+    const [vail, setVail] = useState(false)
+    const [btnTheme, setButton] = useState("h-10 w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90")
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            title: "",
-            content: "",
-        },
+        defaultValues: { title: "", content: ""},
     })
-    const { todos, setTodos} = useTodo();
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
+
+    useEffect(() => {
+        setVail(form.formState.isValid)
+        setButton((form.formState.isValid 
+            ? "h-10 w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90" 
+            : "h-10 w-full rounded-md bg-secondary text-secondary-foreground"
+        ))
+    }, [form.formState.isValid])
+    
+    const onSubmit = (values: z.infer<typeof formSchema>) => {    
         let id: number = 1
         while (todos.find(t => t.id === id)) { id++; }
         setTodos([...todos, {
@@ -61,7 +67,6 @@ export default function AddTodo() {
             completed: false,
         }])
         localStorage.setItem("todos", JSON.stringify(todos))
-        console.log(values)
     }
 
   return (
@@ -83,7 +88,7 @@ export default function AddTodo() {
                                     <Input placeholder="Write todo here" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    This is your public display name.
+                                    This is your Todo title
                                 </FormDescription>
                             </FormItem>
                           )}
@@ -95,15 +100,15 @@ export default function AddTodo() {
                             <FormItem>
                                 <FormLabel>Content</FormLabel>
                                 <FormControl>
-                                    <Textarea placeholder="Write todo here" {...field} />
+                                    <Textarea aria-invalid={form.formState.errors.content ? false : true} placeholder="Write todo here" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    This is your public display name.
+                                    This is your Todo content
                                 </FormDescription>
                             </FormItem>
                           )}
-                        />
-                        <DialogClose type="submit">
+                        />                                                   
+                        <DialogClose type="submit" disabled={!vail} className={btnTheme}>
                             ADD
                         </DialogClose>
                     </form>
@@ -113,3 +118,5 @@ export default function AddTodo() {
     </div>
   )
 }
+
+// {form.formState.isValid ? vailButton : notVailButton}
