@@ -41,7 +41,7 @@ const formSchema = z.object({
 })
 
 export default function AddTodo() {
-    const { todos, setTodos} = useTodo();
+    const { todoList, setTodoList} = useTodo();
     const [vail, setVail] = useState(false)
     const [btnTheme, setButton] = useState("h-10 w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90")
     const form = useForm<z.infer<typeof formSchema>>({
@@ -56,17 +56,18 @@ export default function AddTodo() {
             : "h-10 w-full rounded-md bg-secondary text-secondary-foreground"
         ))
     }, [form.formState.isValid])
-    
-    const onSubmit = (values: z.infer<typeof formSchema>) => {    
-        let id: number = 1
-        while (todos.find(t => t.id === id)) { id++; }
-        setTodos([...todos, {
-            id: id,
+
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
+        const indexTodoList = todoList.map((todo, index) => { return {...todo, id: index} })
+        const newTodoList = [...indexTodoList, {
+            id: indexTodoList.length,
             title: values.title,
             content: values.content,
             completed: false,
-        }])
-        localStorage.setItem("todos", JSON.stringify(todos))
+        }]
+        setTodoList(newTodoList)
+        localStorage.setItem("todoList", JSON.stringify(newTodoList))
+        form.reset({ title: "", content: "" });
     }
 
   return (
@@ -100,7 +101,7 @@ export default function AddTodo() {
                             <FormItem>
                                 <FormLabel>Content</FormLabel>
                                 <FormControl>
-                                    <Textarea aria-invalid={form.formState.errors.content ? false : true} placeholder="Write todo here" {...field} />
+                                    <Textarea placeholder="Write todo here" {...field} />
                                 </FormControl>
                                 <FormDescription>
                                     This is your Todo content
@@ -118,5 +119,3 @@ export default function AddTodo() {
     </div>
   )
 }
-
-// {form.formState.isValid ? vailButton : notVailButton}

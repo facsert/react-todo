@@ -46,14 +46,15 @@ const formSchema = z.object({
 
 
 export default function EditTodo({ editId }: { editId: number }) {
-    const { todos, setTodos} = useTodo();
+    const { todoList, setTodoList} = useTodo();
     const [vail, setVail] = useState(false)
     const [btnTheme, setButton] = useState("h-10 w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90")
-    const editTodo = todos.find(t => t.id === editId) ?? {
+    const editTodo = todoList.find(t => t.id === editId) ?? {
         id: 0,
         title: "",
         content: "",
         completed: false,
+        deleted: false,
     }
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -69,12 +70,18 @@ export default function EditTodo({ editId }: { editId: number }) {
     }, [form.formState.isValid])
     
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        let updateTodos: Todo[] = [];
-        [...todos].forEach(t => {
-            updateTodos.push(t.id === editId ? { ...t, title: values.title, content: values.content }: t)
-        }) 
-        setTodos(updateTodos)
-        localStorage.setItem("todos", JSON.stringify(todos))
+        // let updateTodoList: Todo[] = [];
+        // [...todoList].forEach(t => {
+        //     updateTodoList.push(t.id === editId ? { ...t, title: values.title, content: values.content }: t)
+        // }) 
+        setTodoList([...(todoList.filter(t => t.id !== editId)), {
+            id: editId,
+            title: values.title,
+            content: values.content,
+            completed: editTodo.completed,
+        }])
+        localStorage.setItem("todoList", JSON.stringify(todoList))
+        // console.log(todoList)
     }
 
   return (

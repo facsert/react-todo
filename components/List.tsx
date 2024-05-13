@@ -16,14 +16,26 @@ import { Trash2  } from 'lucide-react';
 import { useTodo } from "@/lib/data";
 
 import EditTodo from "@/components/EditTodo"
+import { useEffect } from "react";
 
 export default function List() {
-    const { todos, setTodos} = useTodo();
+    const { todoList, setTodoList} = useTodo();
+    useEffect(() => {
+        const list = localStorage.getItem("todoList")
+        setTodoList(list ? JSON.parse(list) : [])
+    }, [setTodoList])
+
     const switchComplete = (id: number) => {
-        setTodos(todos.map((todo) => todo.id === id? {...todo, completed: !todo.completed}: todo ))
+        const newTodoList = todoList.map((todo) => todo.id === id? {...todo, completed: !todo.completed}: todo )
+        setTodoList(newTodoList)
+        localStorage.setItem("todoList", JSON.stringify(newTodoList))
     }
-    const DeleteTodo = (id: number) => { setTodos(todos.filter((todo) => todo.id !== id))}
-    if (todos.length === 0) {
+    const DeleteTodo = (id: number) => { 
+        const newTodoList = todoList.filter((todo) => todo.id !== id)
+        setTodoList(newTodoList)
+        localStorage.setItem("todoList", JSON.stringify(newTodoList))
+    }
+    if (todoList.length === 0) {
         return (
             <Command>
                 <div className="border ">
@@ -31,7 +43,7 @@ export default function List() {
                 </div>
                 <CommandList>
                     <CommandEmpty>No Todo found</CommandEmpty>
-                    <CommandGroup heading="Todos">
+                    <CommandGroup heading="TodoList">
                         <CommandItem></CommandItem>
                         <p className="w-full bg-transparent text-center">No Todo</p>
                     </CommandGroup>
@@ -47,11 +59,11 @@ export default function List() {
             </div>
             <CommandList>
                 <CommandEmpty>No Todo found</CommandEmpty>
-                <CommandGroup heading="Todos">
-                    {todos.map(todo => {
+                <CommandGroup heading="TodoList">
+                    {todoList.map(todo => {
                         return (
                             <CommandItem key={todo.id} className="h-[50px] mt-4 border">
-                            <Checkbox className="mr-2" key={todo.id} onCheckedChange={() => {switchComplete(todo.id)}} />  
+                            <Checkbox className="mr-2" checked={todo.completed} key={todo.id} onCheckedChange={() => {switchComplete(todo.id)}} />  
                             <Label className={todo.completed? "line-through": ""}>
                                 {todo.title}
                             </Label>

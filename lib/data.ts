@@ -9,21 +9,17 @@ interface Todo {
 
 interface TodoState {
     todo: Todo;
-    todos: Todo[];
+    todoList: Todo[];
     setTodo: (todo: Todo) => void;
-    setTodos: (todos: Todo[]) => void;
+    setTodoList: (todoList: Todo[]) => void;
 }
 
 
 const useTodo = create<TodoState>((set) => ({
     todo: { id: 0, title: '', completed: false, content: '' },
     setTodo: (t: Todo) => set({ todo: t }),
-    todos: [
-        {id: 1, title: 'Todo 1', completed: false, content: 'Todo 1 content' },
-        {id: 2, title: 'Todo 2', completed: false, content: 'Todo 2 content' },
-        {id: 3, title: 'Todo 3', completed: false, content: 'Todo 3 content' }
-    ],
-    setTodos: (todos: Todo[]) => set({ todos: todos }),
+    todoList: [],
+    setTodoList: (todoList: Todo[]) => set({ todoList: todoList }),
 }));
 
 
